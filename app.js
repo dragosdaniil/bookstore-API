@@ -13,7 +13,6 @@ const auth = require('./middleware/authentication');
 const {customError} = require('./middleware/error')
 // Middleware
 app.use(auth);
-app.use(customError);
 app.use(cookieParser());
 app.use(helmet());
 app.use(express.static('static'));
@@ -21,6 +20,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(routes);
+app.use(customError);
 
 // TODO:
 //  - Create a custom error function to handle errors

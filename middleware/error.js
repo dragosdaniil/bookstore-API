@@ -5,6 +5,11 @@ class CustomError extends Error {
     }
   }
   
+
+  const createCustomError = (msg, statusCode = 404) => {
+    return new CustomError(msg, statusCode);
+  };
+
   const customError = (err, req, res, next) => {
     if (err instanceof CustomError) {
       return res.status(err.statusCode).json({ msg: err.message });
@@ -12,4 +17,4 @@ class CustomError extends Error {
     return res.status(500).json({ msg: "please try again" });
   };
   
-  module.exports = {customError, CustomError};
+  module.exports = {customError, CustomError, createCustomError};

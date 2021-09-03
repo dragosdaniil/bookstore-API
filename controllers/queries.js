@@ -4,7 +4,7 @@ const postgre = require('pg-promise')({
 require('dotenv').config({path:'../.env'});
 const checkSchema = require('../template/schema')
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
-const {CustomError} = require('../middleware/error');
+const {createCustomError} = require('../middleware/error');
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
@@ -24,8 +24,8 @@ const createBook = async(req,res,next)=>{
        DO UPDATE SET quantity=bookTable.quantity+1 \
        WHERE bookTable.title=$/title/', {...book, reference_number:referenceNumber});        
     } else if (validation instanceof Array){
-        const err = new CustomError(`${validation[1]} could not be found`, 404);
-        return next(err);
+        
+        return next(createCustomError(`${validation[1]} could not be found`));
     }
     return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})
 }
@@ -34,10 +34,16 @@ const createBook = async(req,res,next)=>{
 const getOne = async(req,res,next)=>{
     const {id:bookid, reference_number:referenceNumber} = req.params;
     let queryResult;
-    if(bookid){
-        queryResult = await db.one('SELECT * FROM bookTable WHERE bookId=$1',[bookid]);
-    }else{
-        queryResult = await db.one('SELECT * FROM bookTable WHERE reference_number=$1',[referenceNumber]);
+    try{
+
+        if(bookid){
+            queryResult = await db.one('SELECT * FROM bookTable WHERE bookId=$1',[bookid]);
+        }else{
+            queryResult = await db.one('SELECT * FROM bookTable WHERE reference_number=$1',[referenceNumber]);
+        }
+ 
+    } catch(error){
+        return next(createCustomError(`No ${referenceNumber} has been found`));
     }
     return res.status(200).json(queryResult);
 }
@@ -57,8 +63,7 @@ const getByFilters = async (req,res,next)=>{
         }
 
     }catch(error){
-        const err = CustomError(`No results coresponding to the filters have been found`, 404)
-        return next(err)
+        return next(createCustomError(`No results coresponding to the filters have been found`));
     }
     return res.status(200).json(queryResult);
 }
@@ -75,8 +80,7 @@ const updateRow = async(req,res,next)=>{
             WHERE reference_number=$/reference_number/',
             {...book,reference_number:referenceNumber})
         } catch(error){
-            const err = CustomError(`No ${referenceNumber} has been found`, 404);
-            return next(err);
+            return next(createCustomError(`No ${referenceNumber} has been found`));
         }
     
     
