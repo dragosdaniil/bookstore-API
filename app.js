@@ -10,11 +10,12 @@ const routes = require('./routes/routes');
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 const auth = require('./middleware/authentication');
-
+const {customError} = require('./middleware/error')
 // Middleware
 app.use(auth);
-app.use(cookieParser())
-app.use(helmet())
+app.use(customError);
+app.use(cookieParser());
+app.use(helmet());
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

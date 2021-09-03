@@ -4,7 +4,7 @@ const postgre = require('pg-promise')({
 require('dotenv').config({path:'../.env'});
 const checkSchema = require('../template/schema')
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
-
+const {CustomError} = require('../middleware/error');
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
@@ -24,7 +24,8 @@ const createBook = async(req,res,next)=>{
        DO UPDATE SET quantity=bookTable.quantity+1 \
        WHERE bookTable.title=$/title/', {...book, reference_number:referenceNumber});        
     } else if (validation instanceof Array){
-        return res.status(400).json({message:`${validation[1]} must not equal NULL`})
+        const err = new CustomError(`${validation[1]} could not be found`, 404);
+        return next(err);
     }
     return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})
 }
@@ -56,7 +57,8 @@ const getByFilters = async (req,res,next)=>{
         }
 
     }catch(error){
-        return res.status(404).json({error:error.name,message:`No results coresponding to the filters have been found`})
+        const err = CustomError(`No results coresponding to the filters have been found`, 404)
+        return next(err)
     }
     return res.status(200).json(queryResult);
 }
@@ -73,7 +75,8 @@ const updateRow = async(req,res,next)=>{
             WHERE reference_number=$/reference_number/',
             {...book,reference_number:referenceNumber})
         } catch(error){
-            return res.status(404).json({error:error.name, message:`No ${referenceNumber} has been found`})
+            const err = CustomError(`No ${referenceNumber} has been found`, 404);
+            return next(err);
         }
     
     
