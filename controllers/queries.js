@@ -5,6 +5,8 @@ require('dotenv').config({path:'../.env'});
 const checkSchema = require('../template/schema')
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
 const {createCustomError} = require('../middleware/error');
+const {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage} = require('./queryTemplates');
+
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
@@ -16,13 +18,11 @@ const createBook = async(req,res,next)=>{
     const book = req.body;
     const referenceNumber = Date.now();
     const validation = checkSchema(book)
-    console.log(book)
     if(validation === true){
-       db.none('INSERT INTO bookTable (title, reference_number, author, price, genre, quantity) \
-       VALUES($/title/,$/reference_number/,$/author/,$/price/,$/genre/,$/quantity/) \
-       ON CONFLICT (title) \
-       DO UPDATE SET quantity=bookTable.quantity+1 \
-       WHERE bookTable.title=$/title/', {...book, reference_number:referenceNumber});        
+        await db.none(book.image_url?
+            createWithImage:createWtihoutImage,
+            {...book, reference_number:referenceNumber});   
+            
     } else if (validation instanceof Array){
         
         return next(createCustomError(`${validation[1]} could not be found`));
@@ -32,16 +32,18 @@ const createBook = async(req,res,next)=>{
 
 
 const getOne = async(req,res,next)=>{
-    const {id:bookid, reference_number:referenceNumber} = req.params;
+    const {id:bookid, reference_number:referenceNumber, title:title} = req.params;
     let queryResult;
     try{
 
         if(bookid){
             queryResult = await db.one('SELECT * FROM bookTable WHERE bookId=$1',[bookid]);
-        }else{
+        }else if(referenceNumber){
             queryResult = await db.one('SELECT * FROM bookTable WHERE reference_number=$1',[referenceNumber]);
+        }else{
+            queryResult = await db.one('SELECT *  FROM bookTable WHERE title=$1',[title]);
         }
- 
+        
     } catch(error){
         return next(createCustomError(`No ${referenceNumber} has been found`));
     }
@@ -61,7 +63,7 @@ const getByFilters = async (req,res,next)=>{
         }else if (!author){
             queryResult = await db.many('SELECT * FROM bookTable WHERE genre=$1',[genre]);
         }
-
+    
     }catch(error){
         return next(createCustomError(`No results coresponding to the filters have been found`));
     }
@@ -70,17 +72,29 @@ const getByFilters = async (req,res,next)=>{
 
 const updateRow = async(req,res,next)=>{
     const book = req.body;
-    const referenceNumber = req.params.reference_number;
-    
+    const {reference_number:referenceNumber, title} = req.params;
+    let newBook;
+
+    if(referenceNumber){
+        newBook = {...book, reference_number:referenceNumber};
+    }else{
+        newBook = {...book,title:title};
+    }
         try {
-            db.none('UPDATE bookTable\
-            SET title=$/title/,\
-            author=$/author/, price=$/price/,\
-            genre=$/genre/, quantity=$/quantity/\
-            WHERE reference_number=$/reference_number/',
-            {...book,reference_number:referenceNumber})
-        } catch(error){
-            return next(createCustomError(`No ${referenceNumber} has been found`));
+                console.log(newBook.image_url?updateWithImage:updateWithoutImage,)
+                await db.none(
+                    newBook.image_url?updateWithImage:updateWithoutImage,
+                    {...newBook}
+                    );
+
+            }catch(error){
+
+                if(referenceNumber){
+                    return next(createCustomError(`No ${referenceNumber} has been found`));
+                }else{
+                    return next(createCustomError(error));
+                }
+            
         }
     
     
