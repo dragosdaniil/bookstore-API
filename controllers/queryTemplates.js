@@ -17,10 +17,16 @@ ON CONFLICT (title) \
 DO UPDATE SET quantity=bookTable.quantity+1 \
 WHERE bookTable.title=$/title/'
 
+const createNewBook = 'INSERT INTO bookTable (title, reference_number, author, price, genre, quantity, image_url) \
+VALUES($/title/,$/reference_number/,$/author/,$/price/,$/genre/,$/quantity/, $/image_url/) \
+ON CONFLICT (title) \
+DO UPDATE SET quantity=bookTable.quantity+1 \
+WHERE bookTable.title=$/title/'
+
 const createWtihoutImage = 'INSERT INTO bookTable (title, reference_number, author, price, genre, quantity, image_url) \
 VALUES($/title/,$/reference_number/,$/author/,$/price/,$/genre/,$/quantity/) \
 ON CONFLICT (title) \
 DO UPDATE SET quantity=bookTable.quantity+1 \
 WHERE bookTable.title=$/title/'
 
-module.exports = {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage};
+module.exports = {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage, createNewBook};

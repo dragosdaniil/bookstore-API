@@ -2,11 +2,11 @@ const postgre = require('pg-promise')({
     capSQL: true // if you want all generated SQL capitalized
  });
 require('dotenv').config({path:'../.env'});
-const checkSchema = require('../template/schema')
+const checkSchema = require('../template/schema');
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
 const {createCustomError} = require('../middleware/error');
-const {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage} = require('./queryTemplates');
-
+const {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage, createNewBook} = require('./queryTemplates');
+const BookModel = require('../models/bookModel');
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
@@ -18,6 +18,9 @@ const createBook = async(req,res,next)=>{
     const book = req.body;
     const referenceNumber = Date.now();
     const validation = checkSchema(book)
+    const bookInstance = new BookModel();
+    bookInstance.buildBookFromObject(book);
+    
     if(validation === true){
         await db.none(book.image_url?
             createWithImage:createWtihoutImage,
