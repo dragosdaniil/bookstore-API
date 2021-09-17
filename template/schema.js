@@ -1,10 +1,10 @@
 const SCHEMA = {
-                bookId:false,
                 title:true,
                 author:true,
                 price:false,
                 genre:false,
                 quantity:false,
+                image_url:false,
             };
 
 const checkSchema = (book) => {
