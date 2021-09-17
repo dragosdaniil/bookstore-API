@@ -14,7 +14,7 @@ const auth = require('./middleware/authentication');
 const {customError} = require('./middleware/error');
 
 // Middleware
-// app.use(auth);
+app.use(auth);
 app.use(cookieParser());
 app.use(cors({
     origin: ["http://localhost:3000"],
