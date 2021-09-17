@@ -1,67 +1,67 @@
 class BookModel {
 
-    #title
-    #author
-    #price
-    #genre
-    #quantity
-    #image_url
+    _title
+    _author
+    _price
+    _genre
+    _quantity
+    _image_url
 
     constructor(){
-        this.#title = '';
-        this.#author = '';
-        this.#price = 9.99;
-        this.#genre = '';
-        this.#quantity = 1;
-        this.#image_url = '';
+        this._title = '';
+        this._author = '';
+        this._price = 9.99;
+        this._genre = '';
+        this._quantity = 1;
+        this._image_url = '';
     }
 
     get getTitle(){
-        return this.#title;
+        return this._title;
     }
 
     get getAuthor(){
-        return this.#author;
+        return this._author;
     }
 
     get getPrice(){
-        return this.#price;
+        return this._price;
     }
 
     get getGenre(){
-        return this.#genre;
+        return this._genre;
     }
 
     get getQuantity(){
-        return this.#quantity;
+        return this._quantity;
     }
 
     get getImageUrl(){
-        return this.#image_url;
+        return this._image_url;
     }
 
     set setPrice(newPrice){
-        this.#price = newPrice;
+        this._price = newPrice;
     }
 
     set setQuantity(newQuantity){
-        this.#quantity = newQuantity;
+        this._quantity = newQuantity;
     }
 
     set setTitle(newTitle){
-        this.#title = newTitle;
+        this._title = newTitle;
     }
 
     set setAuthor(newAuthor){
-        this.#author = newAuthor;
+        this._author = newAuthor;
     }
 
     set setGenre(newGenre){
-        this.#genre = newGenre;
+        this._genre = newGenre;
     }
 
     set setImageUrl(newImageUrl){
-        this.#image_url = newImageUrl;
+        this._image_url = newImageUrl;
     }
 
     buildBookFromObject(bookObject){
@@ -75,7 +75,10 @@ class BookModel {
 
     toObject(){
         let newObj = {};
-
+        for(let key in this){
+            newObj[key.slice(1)] = this[key];
+        }
+        return newObj;
     }
 }
 
