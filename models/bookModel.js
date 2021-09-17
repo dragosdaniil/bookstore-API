@@ -65,8 +65,18 @@ class BookModel {
     }
 
     buildBookFromObject(bookObject){
-        this.setTitle=bookObject.title; // must be
-        this.setAuthor=bookObject.author; // must be
+        if(!bookObject.title){
+            throw Error('"title" property is undefined');
+        }else{
+            this.setTitle = bookObject.title; // must be
+        }
+        
+        if(!bookObject.author){
+            throw Error('"author" property is undefined');
+        }else{
+            this.setAuthor = bookObject.author; // must be
+        }
+
         this.setPrice=bookObject.price?bookObject.price:this.getPrice; // optional
         this.setGenre=bookObject.genre?bookObject.genre:this.getGenre; // optional
         this.setQuantity=bookObject.quantity?bookObject.quantity:this.getQuantity; // optional
