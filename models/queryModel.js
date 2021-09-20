@@ -18,7 +18,7 @@ class QueryModel{
         let columns = '(';
         let values = '(';
         for(let key in bookObject){
-            columns +=`${key},`;
+            columns += `${key},`;
             values += `$<${key}>,`;
         }
 
@@ -28,8 +28,7 @@ class QueryModel{
         let query = `${this.insert} ${this.into} ${this.tableName} ${columns} \ 
             ${values} ${this.on} ${this.conflict} \
             ${this.do} ${this.update} ${this.set} quantity=${this.tableName}.quantity+1\
-            ${this.where} ${this.tableName}.title = $<title>;
-        `;
+            ${this.where} ${this.tableName}.title = $<title>;`;
 
         return query;
     }
@@ -38,7 +37,7 @@ class QueryModel{
 
     }
 
-    updateQuery(bookObject){
+    updateQuery(bookObject, selector = 'title'){
         let values = ''; 
         for(let key in bookObject){
             if(key!='title'){
@@ -46,7 +45,7 @@ class QueryModel{
             }
         }
         values = values.slice(0,values.length);
-        let query = `${this.update} ${this.tableName} ${this.set} ${values} ${this.where} title=$<title>`;
+        let query = `${this.update} ${this.tableName} ${this.set} ${values} ${this.where} ${selector}=$<${selector}>`;
 
         return query;
     }

@@ -4,9 +4,9 @@ const postgre = require('pg-promise')({
 require('dotenv').config({path:'../.env'});
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
 const {createCustomError} = require('../middleware/error');
-const {updateWithImage, updateWithoutImage, createNewBook} = require('./queryTemplates');
 const QueryModel = require('../models/queryModel');
 const BookModel = require('../models/bookModel');
+
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
@@ -69,34 +69,20 @@ const getByFilters = async (req,res,next)=>{
     return res.status(200).json(queryResult);
 }
 
+
 const updateRow = async(req,res,next)=>{
     const book = req.body;
     const {reference_number:referenceNumber, title} = req.params;
-    let newBook;
-
-    if(referenceNumber){
-        newBook = {...book, reference_number:referenceNumber};
-    }else{
-        newBook = {...book,title:title};
-    }
-        try {
-                console.log(newBook.image_url?updateWithImage:updateWithoutImage,)
-                await db.none(
-                    newBook.image_url?updateWithImage:updateWithoutImage,
-                    {...newBook}
-                    );
-
-            }catch(error){
-
-                if(referenceNumber){
-                    return next(createCustomError(`No ${referenceNumber} has been found`));
-                }else{
-                    return next(createCustomError(error));
-                }
-            
+    const query = new QueryModel('bookTable');    
+    try {
+        if(referenceNumber){
+            await db.none(query.updateQuery(book, 'reference_number'), {...book, reference_number:referenceNumber});
+        }else{
+            await db.none(query.updateQuery(book), {...book, title:title});
         }
-    
-    
+    }catch(error){
+        return next(createCustomError(error.message));  
+    }
     return res.status(200).json({message:"Success"});
 }
 
