@@ -14,22 +14,6 @@ const getAll = async (req,res,next) =>{
 }
 
 
-const createBook = async(req,res,next)=>{
-    const book = req.body;
-    const referenceNumber = Date.now();
-    const bookInstance = new BookModel();
-    const query = new QueryModel('bookTable');
-    bookInstance.buildBookFromObject(book);
-    try{
-        const newBook = bookInstance.toObject();
-        await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});   
-    }catch(error){
-        return next(createCustomError(error.message));
-    }
-    return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})
-}
-
-
 const getOne = async(req,res,next)=>{
     const {id:bookid, reference_number:referenceNumber, title:title} = req.params;
     let queryResult;
@@ -51,23 +35,33 @@ const getOne = async(req,res,next)=>{
 
 
 const getByFilters = async (req,res,next)=>{
-    const {author,genre} = req.query;
+    const filters = req.query;
+    const query = new QueryModel('bookTable');
     let queryResult;
     try{
-
-        if(author && genre){
-            queryResult = await db.many('SELECT * FROM bookTable WHERE author=$1 AND genre=$2',[author, genre]);
-        }else if(!genre){
-            queryResult = await db.many('SELECT * FROM bookTable WHERE author=$1',[author]);
-        }else if (!author){
-            queryResult = await db.many('SELECT * FROM bookTable WHERE genre=$1',[genre]);
-        }
-    
+        queryResult = await db.many(query.filterQuery(filters),{...filters});
     }catch(error){
         return next(createCustomError(`No results coresponding to the filters have been found`));
     }
     return res.status(200).json(queryResult);
 }
+
+
+const createBook = async(req,res,next)=>{
+    const book = req.body;
+    const referenceNumber = Date.now();
+    const bookInstance = new BookModel();
+    const query = new QueryModel('bookTable');
+    bookInstance.buildBookFromObject(book);
+    try{
+        const newBook = bookInstance.toObject();
+        await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});   
+    }catch(error){
+        return next(createCustomError(error.message));
+    }
+    return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})
+}
+
 
 
 const updateRow = async(req,res,next)=>{
