@@ -2,10 +2,10 @@ const postgre = require('pg-promise')({
     capSQL: true // if you want all generated SQL capitalized
  });
 require('dotenv').config({path:'../.env'});
-const checkSchema = require('../template/schema');
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
 const {createCustomError} = require('../middleware/error');
-const {updateWithImage, updateWithoutImage, createWithImage, createWtihoutImage, createNewBook} = require('./queryTemplates');
+const {updateWithImage, updateWithoutImage, createNewBook} = require('./queryTemplates');
+const QueryModel = require('../models/queryModel');
 const BookModel = require('../models/bookModel');
 
 const getAll = async (req,res,next) =>{
@@ -17,18 +17,14 @@ const getAll = async (req,res,next) =>{
 const createBook = async(req,res,next)=>{
     const book = req.body;
     const referenceNumber = Date.now();
-    const validation = checkSchema(book)
     const bookInstance = new BookModel();
+    const query = new QueryModel('bookTable');
     bookInstance.buildBookFromObject(book);
-    
-    if(validation === true){
-        await db.none(book.image_url?
-            createWithImage:createWtihoutImage,
-            {...book, reference_number:referenceNumber});   
-            
-    } else if (validation instanceof Array){
-        
-        return next(createCustomError(`${validation[1]} could not be found`));
+    try{
+        const newBook = bookInstance.toObject();
+        await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});   
+    }catch(error){
+        return next(createCustomError(error.message));
     }
     return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})
 }

@@ -1,12 +1,5 @@
 class BookModel {
 
-    _title
-    _author
-    _price
-    _genre
-    _quantity
-    _image_url
-
     constructor(){
         this._title = '';
         this._author = '';
