@@ -18,6 +18,18 @@ class QueryModel{
     }
 
 
+    getOneQuery(selectors){
+        let query = `${this.select} * ${this.from} ${this.tableName} ${this.where}`;
+        for(let key in selectors){
+            if(selectors[key]){
+                query += ` ${key}=$/${key}/;`;
+                break;
+            }
+        }
+        return query;
+    }
+    
+
     createQuery(bookObject){
         let columns = '(';
         let values = '(';
@@ -82,5 +94,5 @@ class QueryModel{
 // console.log(query.updateQuery(book));
 // console.log(query.createQuery(book));
 // console.log(query.filterQuery({author:true, minPrice:true, maxPrice:true,genre:true}));
-
+// console.log(query.getOneQuery({bookid:null,title:'arthur',reference_number:145353636366}));
 module.exports = QueryModel;
