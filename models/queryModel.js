@@ -77,11 +77,11 @@ class QueryModel{
         }
 
         if(filters.minPrice){
-            query += ` price>$/minPrice/ ${this.and} `;
+            query += ` price=>$/minPrice/ ${this.and} `;
         }
 
         if(filters.maxPrice){
-            query += ` price<$/maxPrice/ ${this.and} `;
+            query += ` price<=$/maxPrice/ ${this.and} `;
         }
         query = query.slice(0,query.length - 5) + ';';
         console.log(query)
