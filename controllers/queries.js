@@ -43,22 +43,15 @@ const createBook = async(req,res,next)=>{
     const referenceNumber = Date.now();
     const bookInstance = new BookModel();
     try{
-        if(!(payload instanceof Array)){
-            bookInstance.buildBookFromObject(payload);
-            const newBook = bookInstance.toObject();
-            await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});
-            return res.status(201).json({"status":"Success","message":"Book has been added successfully!"})   
-    }else{
         for(let i = 0; i<payload.length;i++){
             bookInstance.buildBookFromObject(payload[i]);
             const newBook = bookInstance.toObject();
             await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});
         }
-        return res.status(201).json({"status":"Success","message":"Books have been added successfully!"})
-    }
     }catch(error){
         return next(createCustomError(error.message));
     }
+    return res.status(201).json({"status":"Success","message":"Books have been added successfully!"})
 }
 
 
