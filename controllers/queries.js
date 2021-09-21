@@ -10,7 +10,8 @@ const query = new QueryModel('bookTable');
 
 const getAll = async (req,res,next) =>{
     const result = await db.any('SELECT * FROM bookTable');
-    return res.status(200).json(result);
+    const jsonResult = {status:"Success", Books:result, Items:result.length};
+    return res.status(200).json(jsonResult);
 }
 
 
@@ -28,13 +29,15 @@ const getOne = async(req,res,next)=>{
 
 const getByFilters = async (req,res,next)=>{
     const filters = req.query;
+    console.log(filters)
     let queryResult;
     try{
         queryResult = await db.many(query.filterQuery(filters),{...filters});
     }catch(error){
         return next(createCustomError(`No results coresponding to the filters have been found`));
     }
-    return res.status(200).json(queryResult);
+    const jsonResult = {status:"Success", Books:queryResult, Items:queryResult.length};
+    return res.status(200).json(jsonResult);
 }
 
 

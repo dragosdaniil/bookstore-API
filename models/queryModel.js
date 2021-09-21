@@ -66,25 +66,25 @@ class QueryModel{
 
 
     filterQuery(filters){
-        let query = `${this.select} * ${this.from} ${this.tableName}`;
+        let query = `${this.select} * ${this.from} ${this.tableName} ${this.where}`;
 
         if(filters.author){
-            query += ` ${this.where} author=$/author/ ${this.and} `;
+            query += ` author=$/author/ ${this.and} `;
         }
 
         if(filters.genre){
-            query += ` ${this.where} genre=$/genre/ ${this.and} `;
+            query += ` genre=$/genre/ ${this.and} `;
         }
 
         if(filters.minPrice){
-            query += ` ${this.where} price>$/minPrice/ ${this.and} `;
+            query += ` price>$/minPrice/ ${this.and} `;
         }
 
         if(filters.maxPrice){
-            query += ` ${this.where} price<$/maxPrice/ ${this.and} `;
+            query += ` price<$/maxPrice/ ${this.and} `;
         }
         query = query.slice(0,query.length - 5) + ';';
-
+        console.log(query)
         return query;
     }
 }

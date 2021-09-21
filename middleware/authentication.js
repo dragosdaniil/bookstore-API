@@ -1,3 +1,4 @@
+require('dotenv').config({path:'../.env'});
 const authentication = (req,res,next)=>{
     const auth = req.headers.authorization;
     
@@ -12,7 +13,7 @@ const authentication = (req,res,next)=>{
     const user = authParams[0];
     const pass = authParams[1];
 
-    if(user === 'DragosDaniil' && pass === '18dec1997'){
+    if(user === process.env.API_USER && pass === process.env.API_PASS){
         next()
     } else {
         const err = new Error('Invalid credentials!');
