@@ -29,7 +29,6 @@ const getOne = async(req,res,next)=>{
 
 const getByFilters = async (req,res,next)=>{
     const filters = req.query;
-    console.log(filters)
     let queryResult;
     try{
         queryResult = await db.many(query.filterQuery(filters),{...filters});

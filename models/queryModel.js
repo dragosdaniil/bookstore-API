@@ -84,7 +84,6 @@ class QueryModel{
             query += ` price<=$/maxPrice/ ${this.and} `;
         }
         query = query.slice(0,query.length - 5) + ';';
-        console.log(query)
         return query;
     }
 }
