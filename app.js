@@ -30,12 +30,13 @@ app.use(routes);
 app.use(customError);
 
 // TODO:
-//  - Create a custom error function to handle errors done
-//  - read about headers, how they influence the system and add them
-//  - Learn how to save images in the API for the frontend part
+//  - Create a custom error function to handle errors - DONE
+//  - read about headers, how they influence the system and add them - ALMOST DONE
+//  - Learn how to save images in the API for the frontend part - DONE
 
 //  - What is https and how can I use it?
 //  - What are https credentials?
+//  - Read more about cookies and how to use them
 
 // var httpServer = http.createServer(app);
 // var httpsServer = https.createServer(credentials, app);
