@@ -5,7 +5,7 @@ require('dotenv').config({path:'../.env'});
 const db = postgre(`postgres://${process.env.USER}:${process.env.PASSWORD}@localhost:5432/postgres`);
 const {createCustomError} = require('../middleware/error');
 const QueryModel = require('../models/queryModel');
-const BookModel = require('../models/bookModel');
+const createNewBook = require('../models/bookModel');
 const query = new QueryModel('bookTable');
 
 const getAll = async (req,res,next) =>{
@@ -43,11 +43,9 @@ const getByFilters = async (req,res,next)=>{
 const createBook = async(req,res,next)=>{
     const payload = req.body;
     const referenceNumber = Date.now();
-    const bookInstance = new BookModel();
     try{
         for(let i = 0; i<payload.length;i++){
-            bookInstance.buildBookFromObject(payload[i]);
-            const newBook = bookInstance.toObject();
+            const newBook = createNewBook(payload[i]);
             await db.none(query.createQuery(newBook), {...newBook, reference_number:referenceNumber});
         }
     }catch(error){
