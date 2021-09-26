@@ -14,13 +14,13 @@ const auth = require('./middleware/authentication');
 const {customError} = require('./middleware/error');
 
 // Middleware
-app.use(auth);
-app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost:3000"],
-    methods: "*",
-    preflightContinue: false
-  }));
+  origin: ["http://localhost:3000"],
+  methods: "*",
+  preflightContinue: false
+}));
+// app.use(auth);
+app.use(cookieParser());
 app.use(helmet());
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({extended: false}));
