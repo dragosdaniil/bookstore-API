@@ -58,12 +58,13 @@ const createBook = async(req,res,next)=>{
 
 const updateRow = async(req,res,next)=>{
     const book = req.body;
-    const {reference_number:referenceNumber, title} = req.params;    
+    const {reference_number:referenceNumber, title} = req.params;  
     try {
+        const newBook = createNewBook(book);  
         if(referenceNumber){
-            await db.none(query.updateQuery(book, 'reference_number'), {...book, reference_number:referenceNumber});
+            await db.none(query.updateQuery(newBook, 'reference_number'), {...book, reference_number:referenceNumber});
         }else{
-            await db.none(query.updateQuery(book), {...book, title:title});
+            await db.none(query.updateQuery(newBook), {...book, title:title});
         }
     }catch(error){
         return next(createCustomError(error.message));  

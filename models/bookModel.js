@@ -5,7 +5,7 @@ function createNewBook(payload){
         quantity: 1,
         image_url: ''
     }
-
+    
     if(!payload.title){
         throw Error('"title" property is undefined');
     }

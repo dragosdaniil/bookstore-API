@@ -12,16 +12,18 @@ const cors = require('cors');
 const helmet = require('helmet');
 const auth = require('./middleware/authentication');
 const {customError} = require('./middleware/error');
-
-// Middleware
-app.use(cors({
+const corsOptions = {
   origin: ["http://localhost:3000"],
   methods: "*",
-  preflightContinue: false
-}));
-// app.use(auth);
+  preflightContinue: false,
+  allowedHeaders:["Authorization","Content-Type"],
+  credentials:true
+};
+// Middleware
 app.use(cookieParser());
 app.use(helmet());
+app.use(cors());
+app.use(auth);
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
