@@ -41,13 +41,11 @@ class QueryModel{
         columns += `${this.referenceNumber})`;
         values += `$/${this.referenceNumber}/)`
 
-        let query = `${this.insert} ${this.into} ${this.tableName} ${columns} \ 
+        return `${this.insert} ${this.into} ${this.tableName} ${columns} \ 
             ${this.values} ${values} \
             ${this.on} ${this.conflict} (title) \
             ${this.do} ${this.update} ${this.set} quantity=${this.tableName}.quantity+1\
             ${this.where} ${this.tableName}.title = $/title/;`;
-
-        return query;
     }
 
 
@@ -59,9 +57,7 @@ class QueryModel{
             }
         }
         values = values.slice(0,values.length-1);
-        let query = `${this.update} ${this.tableName} ${this.set} ${values} ${this.where} ${selector}=$/${selector}/;`;
-
-        return query;
+        return `${this.update} ${this.tableName} ${this.set} ${values} ${this.where} ${selector}=$/${selector}/;`;
     }
 
 
@@ -83,8 +79,7 @@ class QueryModel{
         if(filters.maxPrice){
             query += ` price<=$/maxPrice/ ${this.and} `;
         }
-        query = query.slice(0,query.length - 5) + ';';
-        return query;
+        return query.slice(0,query.length - 5) + ';';
     }
 }
 
